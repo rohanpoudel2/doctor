@@ -1,7 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-
-import App from "./app";
+import Home from "./Home";
 
 export const renderDashboardPage = () => {
   const rootElement = document.getElementById("root");
@@ -9,5 +8,5 @@ export const renderDashboardPage = () => {
     return;
   }
   const root = createRoot(rootElement);
-  root.render(<App />);
+  root.render(<Home />);
 };
