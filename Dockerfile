@@ -22,12 +22,14 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential curl git libpq-dev libvips node-gyp pkg-config python-is-python3
 
 # Install JavaScript dependencies
-ARG NODE_VERSION=18.18.2
-ARG YARN_VERSION=3.6.4
+ARG NODE_VERSION=20.6.0
 ENV PATH=/usr/local/node/bin:$PATH
+
+# Install Node.js using node-build and enable corepack for Yarn
 RUN curl -sL https://github.com/nodenv/node-build/archive/master.tar.gz | tar xz -C /tmp/ && \
     /tmp/node-build-master/bin/node-build "${NODE_VERSION}" /usr/local/node && \
-    npm install -g yarn@$YARN_VERSION && \
+    corepack enable && \
+    corepack prepare yarn@stable --activate && \
     rm -rf /tmp/node-build-master
 
 # Install application gems
@@ -48,7 +50,6 @@ RUN bundle exec bootsnap precompile app/ lib/
 
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
-
 
 # Final stage for app image
 FROM base
