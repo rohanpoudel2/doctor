@@ -7,9 +7,11 @@ class LlmService
 
   def evaluate_and_rewrite(patient_background, conversation)
     prompt = <<~PROMPT
-      You are a medical evaluator. Perform the following tasks:
-      1. Evaluate the relevance, completeness, and clarity of the doctor's questions in the conversation based on the patient background.
-      2. Rewrite the patient's primary concern in a neutral, third-person tone.
+      You are a professional medical evaluator. Your task is to evaluate how effective the doctors questions are in extracting relevant, complete, and clear information from the patient based on the patient background.
+
+      Perform the following tasks:
+      1. Evaluate all of the doctors questions for their relevance, completeness, and clarity in relation to the patient background and the patients responses.
+      2. Rewrite the patients primary concern in a neutral, third-person tone.
 
       Patient Background:
       #{patient_background}
@@ -28,7 +30,7 @@ class LlmService
               "completeness": <score>,
               "clarity": <score>
             },
-            "feedback": "<feedback>"
+            "feedback": "<feedback about how effective the question was in extracting relevant information>"
           },
           ...
         ],

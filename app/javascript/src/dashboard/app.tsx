@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Trophy, Target, Brain } from "lucide-react";
-import { ScoreCard } from "./components/ScoreCard";
 import { QuestionList } from "./components/QuestionList";
+import dayjs from "dayjs";
 
 const CONVAI_API_KEY = "96ac5280554941966a97e03eb17ab9b0";
 const CHAR_ID = "a420dc4a-9d26-11ef-abfd-42010a7be016";
@@ -16,41 +15,50 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [viewState, setViewState] = useState<"chat" | "analysis">("chat");
 
+  const getQueryParam = (param) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  };
+
   useEffect(() => {
-    const fetchSessions = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.post(
-          "https://api.convai.com/character/chatHistory/list",
-          { charID: CHAR_ID, limit: 100 },
-          { headers: { "CONVAI-API-KEY": CONVAI_API_KEY } }
-        );
-        setSessions(response.data);
-      } catch (error) {
-        console.error("Error fetching sessions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const sessionId = getQueryParam("session_id");
+    if (sessionId) {
+      fetchChatHistory(sessionId);
+    } else {
+      const fetchSessions = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.post(
+            "https://api.convai.com/character/chatHistory/list",
+            { charID: CHAR_ID, limit: 100 },
+            { headers: { "CONVAI-API-KEY": CONVAI_API_KEY } }
+          );
+          setSessions(response.data);
+        } catch (error) {
+          console.error("Error fetching sessions:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      const fetchCharacterDetails = async () => {
+        setLoading(true);
+        try {
+          const response = await axios.post(
+            "https://api.convai.com/character/get",
+            { charID: CHAR_ID },
+            { headers: { "CONVAI-API-KEY": CONVAI_API_KEY } }
+          );
+          setCharacterDetails(response.data);
+        } catch (error) {
+          console.error("Error fetching character details:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
 
-    const fetchCharacterDetails = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.post(
-          "https://api.convai.com/character/get",
-          { charID: CHAR_ID },
-          { headers: { "CONVAI-API-KEY": CONVAI_API_KEY } }
-        );
-        setCharacterDetails(response.data);
-      } catch (error) {
-        console.error("Error fetching character details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchSessions();
-    fetchCharacterDetails();
+      fetchSessions();
+      fetchCharacterDetails();
+    }
   }, []);
 
   const fetchChatHistory = async (sessionID: string) => {
@@ -159,11 +167,16 @@ function App() {
                 {chatHistory.map((entry: any, index: number) => (
                   <li key={index} className="border-b border-gray-100 pb-4">
                     <p className="text-gray-800">
-                      <strong>{entry.timestamp}</strong>
+                      <strong>
+                        {dayjs(entry.timestamp).format("MMMM D, YYYY h:mm A")}
+                      </strong>
                     </p>
                     {entry.interaction.map((message: any, idx: number) => (
                       <p key={idx} className="text-gray-600">
-                        <strong>{message.speaker}:</strong> {message.message}
+                        <strong>
+                          {message.speaker == "User" ? "Doctor" : "Patient"}:
+                        </strong>{" "}
+                        {message.message}
                       </p>
                     ))}
                   </li>

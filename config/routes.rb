@@ -7,6 +7,9 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :scores, only: %i[create]
+
+    post 'sessions/start' => 'sessions#start'
+    post 'sessions/end' => 'sessions#end'
   end
 
   # Defines the root path route ("/")

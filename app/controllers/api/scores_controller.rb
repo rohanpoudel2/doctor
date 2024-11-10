@@ -18,6 +18,12 @@ class Api::ScoresController < ApplicationController
 
   private
 
+  def clamp_score(score)
+    return 0 if score.nil?
+
+    [[score, 0].max, 100].min
+  end
+
   def calculate_duration(conversation)
     timestamps = conversation.map { |entry| Time.parse(entry['timestamp']) }
     start_time = timestamps.min
@@ -40,8 +46,6 @@ class Api::ScoresController < ApplicationController
   end
 
   def calculate_total_scores(interaction_scores)
-    Rails.logger.debug "Interaction Scores Input: #{interaction_scores}"
-
     totals = { relevance: 0, completeness: 0, clarity: 0 }
 
     interaction_scores.each do |score_entry|
@@ -51,9 +55,9 @@ class Api::ScoresController < ApplicationController
         next
       end
 
-      totals[:relevance] += scores['relevance'] || 0
-      totals[:completeness] += scores['completeness'] || 0
-      totals[:clarity] += scores['clarity'] || 0
+      totals[:relevance] += clamp_score(scores['relevance'])
+      totals[:completeness] += clamp_score(scores['completeness'])
+      totals[:clarity] += clamp_score(scores['clarity'])
     end
 
     count = interaction_scores.size

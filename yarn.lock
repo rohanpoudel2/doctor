@@ -323,6 +323,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rails/actioncable@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "@rails/actioncable@npm:8.0.0"
+  checksum: a8046092836b30a1b4c51faa527821af927e7642c8e6e8ac07a6f694b276177d9eecd57119da6a4db142bb4dcd3ea09499192b9feaa3f1f6b86277234d8df8c4
+  languageName: node
+  linkType: hard
+
 "@types/prop-types@npm:*":
   version: 15.7.13
   resolution: "@types/prop-types@npm:15.7.13"
@@ -428,6 +435,7 @@ __metadata:
   dependencies:
     "@hotwired/stimulus": ^3.2.2
     "@hotwired/turbo-rails": ^8.0.12
+    "@rails/actioncable": ^8.0.0
     "@types/react": ^18.3.1
     "@types/react-dom": ^18.3.0
     autoprefixer: latest
